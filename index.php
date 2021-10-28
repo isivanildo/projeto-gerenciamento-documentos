@@ -149,7 +149,7 @@ if (!$conn->getResult()){
             </div>
             <!-- /.box-header -->
             <div class="box-body no-padding">
-              <table class="table table-striped">
+              <table id="tabelaDados" class="table table-striped">
                 <thead>
                   <tr>
                     <th style="width: 10px">ID</th>
@@ -174,8 +174,8 @@ if (!$conn->getResult()){
                 <td class="qtdeValor"><?=$qtde_horas?></td>
                 <td><?=$status?></td>
                 <td>
-                <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
-                <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                <button type="button" class="btn btn-primary btn-xs btn-flat editaDados">Editar</button>
+                <button type="button" class="btn btn-danger btn-xs btn-flat excluiDados">Excluir</button>
                 </td>
                 </tr>
                  <?php   
@@ -301,10 +301,16 @@ if (!$conn->getResult()){
     Projeto desenvolvido por Ivanildo Ferreira.
   </footer>
 </div>
-<script type="text/javascript">
-      $(document).ready(function(){					
-					$('tbody > tr').click(function() {       
-            let idDoLocal = teste = $('td:eq(0)', this).text().trim();
+<script>
+      $(document).ready(function(){			
+        //Retorna a coluna da linha selecionada através do botão editar		
+          $(".editaDados").click(function() {
+            var $row = $(this).closest("tr"),
+            $tds = $row.find("td:nth-child(1)");
+            var idDoLocal;
+            $.each($tds, function() {
+              idDoLocal = $(this).text();
+            });   
 						$.ajax({
 							url: 'controllers/processaDocumento.php',
 							method: "post",	
@@ -320,9 +326,32 @@ if (!$conn->getResult()){
                 $("#statusDoc").val(data.statusDoc);
 							}
 						})
-					});
 
-          //Novo ajax
+          });
+
+          //Excluir dados	
+          $(".excluiDados").click(function() {
+            var $row = $(this).closest("tr"),
+            $tds = $row.find("td:nth-child(1)");
+            var idDoLocal;
+            $.each($tds, function() {
+              idDoLocal = $(this).text();
+            });   
+						$.ajax({
+							url: 'controllers/excluiDocumento.php',
+							method: "post",	
+							dataType: 'json',
+							data: {'idLocal' : idDoLocal},
+							
+							success: function(data) {
+                //Atualiza os campos com os valores da consulta.
+
+							}
+						})
+
+          });
+
+          //Envia os dados do formulário para processamento
           $("#getDadosDocumentos").submit(function(event) {
             event.preventDefault();
 
@@ -337,9 +366,9 @@ if (!$conn->getResult()){
             cache: false,
             contentType: false,
             processData: false,
-            xhr: function() { // Custom XMLHttpRequest
+            xhr: function() { 
                 var myXhr = $.ajaxSettings.xhr();
-                if (myXhr.upload) { // Avalia se tem suporte a propriedade upload
+                if (myXhr.upload) { 
                     myXhr.upload.addEventListener('progress', function() {
                         /* faz alguma coisa durante o progresso do upload */
                     }, false);
@@ -349,6 +378,7 @@ if (!$conn->getResult()){
             });
           });
 
+          //Função que cálcula o número de horas das atividades cirriculares
           $(function(){
             var valorCalculado = 0;
             $( ".qtdeValor" ).each(function() {
