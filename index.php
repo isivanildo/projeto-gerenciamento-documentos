@@ -178,7 +178,7 @@ if (!$conn->getResult()){
                     extract($i); ?>
                 <tr>
                 <td><?=$id?></td>
-                <td><img src="<?=$arquivo?>" alt="User Image" class="img-circle img-sm"></td>
+                <td><img src="<?=$tipo_arquivo?>" alt="User Image" class="img-circle img-sm"></td>
                 <td><?=$nome_arquivo?></td>
                 <td><?=$tipo_atividade?></td>
                 <td class="qtdeValor"><?=$qtde_horas?></td>
@@ -208,12 +208,11 @@ if (!$conn->getResult()){
             <!-- small box -->
             <div class="small-box bg-green">
               <div class="inner">
-                <h3 class="somar"></h3>
-        
+                <h3 class="somar"></h3>    
                 <p>Horas</p>
               </div>
               <div class="icon">
-                <i class="ion ion-person-add"></i>
+                <i class="ion ion-clock"></i>
               </div>
             </div>
           </div>
@@ -233,7 +232,7 @@ if (!$conn->getResult()){
                 <p>Documentos</p>
               </div>
               <div class="icon">
-                <i class="ion ion-pie-graph"></i>
+                <i class="ion ion-document"></i>
               </div>
             </div>
           </div>

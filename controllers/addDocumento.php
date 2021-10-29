@@ -11,6 +11,17 @@ $_UP['pasta'] = '../uploads/';
 $getDadosDocumentos = filter_input_array(INPUT_POST, FILTER_DEFAULT);
 
 $getDadosDocumentos["arquivo"] = str_replace("../", "", $_UP['pasta']) . $_FILES['arquivo']['name'];
+$extensao = strtolower(end(explode('.', $_FILES['arquivo']['name'])));
+if ($extensao == "png" || $extensao == "jpg" || $extensao == "gif") {
+    $getDadosDocumentos["tipo_arquivo"] = "img" . DIRECTORY_SEPARATOR . "img.png";
+}
+else if ($extensao == "pdf") {
+    $getDadosDocumentos["tipo_arquivo"] = "img" . DIRECTORY_SEPARATOR . "pdf.png";
+}
+else {
+    $getDadosDocumentos["tipo_arquivo"] = "img" . DIRECTORY_SEPARATOR . "docx.jpg";
+}
+
 
 $id = $getDadosDocumentos["id"];
 $getDadosDocumentos["qtde_horas"] = str_replace(":", ".", $getDadosDocumentos["qtde_horas"]);
@@ -52,9 +63,9 @@ exit; // Para a execução do script
 // Caso script chegue a esse ponto, não houve erro com o upload e o PHP pode continuar
  
 // Faz a verificação da extensão do arquivo
-$extensao = strtolower(end(explode('.', $_FILES['arquivo']['name'])));
+//$extensao = strtolower(end(explode('.', $_FILES['arquivo']['name'])));
 if (array_search($extensao, $_UP['extensoes']) === false) {
-echo "Por favor, envie arquivos com as seguintes extensões: jpg, png ou gif";
+echo "Por favor, envie arquivos com as seguintes extensões: jpg, png, gif, pdf ou docx";
 }
  
 // Faz a verificação do tamanho do arquivo
