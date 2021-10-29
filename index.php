@@ -5,6 +5,7 @@ require_once("app".DIRECTORY_SEPARATOR.$nomeClasse.".php");
 
 $conn = new Read();
 $lerBanco = new Read();
+$lerUsuario = new Read();
 
 if (!$conn->getResult()){
   $conn->FullRead("SELECT doc.*, st.status FROM documentos doc INNER JOIN status_doc st on 
@@ -16,7 +17,7 @@ if (!$conn->getResult()){
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Usuários - Belém Tech Treinamentos</title>
+  <title>Usuários - Documentos</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
@@ -106,7 +107,16 @@ if (!$conn->getResult()){
           <img src="dist/img/avatar5.png" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
-          <p>Fulano Junior</p>
+          <p>
+            <?php
+            $lerUsuario->ExeRead("usuario");
+            foreach ($lerUsuario->getResult() as $i):
+              extract($i);
+              $idUsuario = $id;
+              echo $usuario;
+            endforeach;
+            ?>
+          </p>
           <!-- Status -->
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
@@ -215,10 +225,11 @@ if (!$conn->getResult()){
                 <h3><?php 
                         if($conn->getResult()): 
                          echo $conn->getRowCount();
+                        else:
+                          echo "0";
                         endif;
                         ?>
-                </h3>
-        
+                </h3>       
                 <p>Documentos</p>
               </div>
               <div class="icon">
@@ -274,7 +285,8 @@ if (!$conn->getResult()){
                   <label for="arquivo">Arquivo</label>
                   <input type="file" id="arquivo" name="arquivo">
                 </div>
-                <input type="hidden" class="form-control" id="idDocumento" placeholder="Digite o nome do arquivo" name="id">
+                <input type="hidden" class="form-control" id="idDocumento" name="id">
+                <input type="hidden" class="form-control" id="idUsuario" name="usuario" value="<?=$idUsuario?>">
               </div>
               <!-- /.box-body -->          
               <div class="box-footer">
