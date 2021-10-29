@@ -5,7 +5,7 @@ spl_autoload_register(function($nomeClasse){
 });
 
 /**
- * <b>Delete:</b>
+ * <b>Delete</b>
  * Classe responsável por deletar genéricamente no banco de dados!
  * 
  */
@@ -47,7 +47,7 @@ class Delete extends ConexaoDB {
 
     /**
      * ****************************************
-     * *********** METDODOS PRIVADOS ************
+     * *********** METDODOS PRIVADOS **********
      * ****************************************
      */
     //Obtém o PDO e Prepara a query

@@ -7,13 +7,24 @@ $conn = new Read();
 $lerBanco = new Read();
 $lerUsuario = new Read();
 
+$query = "";
+$query2 = "";
+
+//INICIO PAGINAÇÃO
+$getpage = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
+
+$pager = new Pager("index.php?page="); 
+$pager->ExePager($getpage, 11);
+//FIM PAGINAÇÃO
+
 if (!$conn->getResult()){
   $conn->FullRead("SELECT doc.*, st.status FROM documentos doc INNER JOIN status_doc st on 
-  doc.status_doc = st.id");
+  doc.status_doc = st.id {$query}ORDER BY id LIMIT :limit OFFSET :offset", "{$query2}limit={$pager->getLimit()}&offset={$pager->getOffset()}");
 }
+
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -35,7 +46,7 @@ if (!$conn->getResult()){
   <header class="main-header">
 
     <!-- Logo -->
-    <a href="#" class="logo">
+    <a href="index.php" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini">Grupo Tiradentes</span>
       <!-- logo for regular state and mobile devices -->
@@ -45,54 +56,10 @@ if (!$conn->getResult()){
     <!-- Header Navbar -->
     <nav class="navbar navbar-static-top" role="navigation">
       <!-- Sidebar toggle button-->
-      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+      <a href="index.php" class="sidebar-toggle" data-toggle="push-menu" role="button">
         <span class="sr-only">Toggle navigation</span>
       </a>
-      <!-- Navbar Right Menu -->
-      <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-          <!-- User Account Menu -->
-          <li class="dropdown user user-menu">
-            <!-- Menu Toggle Button -->
 
-            <ul class="dropdown-menu">
-              <!-- The user image in the menu -->
-              <li class="user-header">
-                <img src="dist/img/avatar5.png" class="img-circle" alt="User Image">
-
-                <p>
-                  Fulano Junior - Web Developer
-                  <small>Membro desde Abr. 2018</small>
-                </p>
-              </li>
-              <!-- Menu Body -->
-              <li class="user-body">
-                <div class="row">
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Followers</a>
-                  </div>
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Sales</a>
-                  </div>
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Friends</a>
-                  </div>
-                </div>
-                <!-- /.row -->
-              </li>
-              <!-- Menu Footer-->
-              <li class="user-footer">
-                <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Perfil</a>
-                </div>
-                <div class="pull-right">
-                  <a href="#" class="btn btn-default btn-flat">Sair</a>
-                </div>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
     </nav>
   </header>
   <!-- Left side column. contains the logo and sidebar -->
@@ -104,7 +71,7 @@ if (!$conn->getResult()){
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="dist/img/avatar5.png" class="img-circle" alt="User Image">
+          <img src="img/foto.jpg" class="img-circle" alt="Usuário">
         </div>
         <div class="pull-left info">
           <p>
@@ -142,7 +109,7 @@ if (!$conn->getResult()){
         <small>Gerenciamento de documentos</small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+        <li><a href="index.php"><i class="fa fa-home"></i> Home</a></li>
         <li class="active">Usuários</li>
       </ol>
     </section>
@@ -179,7 +146,7 @@ if (!$conn->getResult()){
                 <tr>
                 <td><?=$id?></td>
                 <td><img src="<?=$tipo_arquivo?>" alt="User Image" class="img-circle img-sm"></td>
-                <td><?=$nome_arquivo?></td>
+                <td><a href="<?=$arquivo?>" target="_blank"><?=$nome_arquivo?></a></td>
                 <td><?=$tipo_atividade?></td>
                 <td class="qtdeValor"><?=$qtde_horas?></td>
                 <td><?=$status?></td>
@@ -208,7 +175,19 @@ if (!$conn->getResult()){
             <!-- small box -->
             <div class="small-box bg-green">
               <div class="inner">
-                <h3 class="somar"></h3>    
+                <h3>
+                  <?php
+                  $conn->FullRead("SELECT SUM(qtde_horas) as total FROM documentos");
+                  if($conn->getResult()): 
+                    foreach ($conn->getResult() as $getTotal):
+                      extract($getTotal);
+                      echo $total;
+                    endforeach;
+                  else:
+                    echo "0";
+                  endif;
+                ?>
+                </h3>    
                 <p>Horas</p>
               </div>
               <div class="icon">
@@ -221,13 +200,16 @@ if (!$conn->getResult()){
             <!-- small box -->
             <div class="small-box bg-yellow">
               <div class="inner">
-                <h3><?php 
-                        if($conn->getResult()): 
-                         echo $conn->getRowCount();
-                        else:
-                          echo "0";
-                        endif;
-                        ?>
+                <h3>
+                  <?php
+                    $conn->FullRead("SELECT doc.*, st.status FROM documentos doc INNER JOIN status_doc st on 
+                    doc.status_doc = st.id");
+                    if($conn->getResult()): 
+                      echo $conn->getRowCount();
+                    else:
+                      echo "0";
+                    endif;
+                  ?>
                 </h3>       
                 <p>Documentos</p>
               </div>
@@ -270,12 +252,10 @@ if (!$conn->getResult()){
 												foreach ($lerBanco->getResult() as $getStatus):
 													extract($getStatus);
 										?>
-													<option value="<?=$id;?>"><?=$status;?></option>
-                          
+											<option value="<?=$id;?>"><?=$status;?></option>                         
 										<?php
 												endforeach;
 											endif;
-
 										?>
                   </select>
                 </div>
@@ -296,7 +276,15 @@ if (!$conn->getResult()){
 
         </div>
       </div>
+      <?php
+        $conn->ExeRead("documentos", "{$query} ORDER BY id DESC LIMIT :limit OFFSET :offset", "{$query2}limit={$pager->getLimit()}&offset={$pager->getOffset()}");   
+        $pager->ReturnPage(); 
 
+        //INICIO PAGINAÇÃO
+        $pager->ExePaginator("documentos" ,"{$query}", "{$query2}");
+        echo $pager->getPaginator();
+        //FIM PAGINAÇÃO
+      ?>
     </section>
     <!-- /.content -->
   </div>
@@ -306,7 +294,7 @@ if (!$conn->getResult()){
   <footer class="main-footer">
     <!-- To the right -->
     <div class="pull-right hidden-xs">
-      <a target="_blank" href="#">Grupo Tiradentes</a>
+      <a target="_blank" href="https://www.grupotiradentes.com/">Grupo Tiradentes</a>
     </div>
     <!-- Default to the left -->
     Projeto desenvolvido por Ivanildo Ferreira.
@@ -372,34 +360,32 @@ if (!$conn->getResult()){
               type: 'POST',
               data: formData,
             success: function(data) {
-              alert(data)
+              //alert(data);
+              window.location = "index.php";
               },
             cache: false,
             contentType: false,
             processData: false,
             xhr: function() { 
-                var myXhr = $.ajaxSettings.xhr();
-                if (myXhr.upload) { 
-                    myXhr.upload.addEventListener('progress', function() {
+                var myUpload = $.ajaxSettings.xhr();
+                if (myUpload.upload) { 
+                    myUpload.upload.addEventListener('progress', function() {
                         /* faz alguma coisa durante o progresso do upload */
                     }, false);
                 }
-                return myXhr;
+                return myUpload;
             }
             });
           });
+          //F
+          $("#qtdeHoras").on("input", function(){
+            var regexp = /[^0-9,:]/g;
+            if(this.value.match(regexp)){
+              $(this).val(this.value.replace(regexp,''));
+            }
+          });
 
-          //Função que cálcula o número de horas das atividades cirriculares
-          $(function(){
-            var valorCalculado = 0;
-            $( ".qtdeValor" ).each(function() {
-              valorCalculado += parseFloat($( this ).text());
-            });
-            $( ".somar" ).text(valorCalculado);
-
-            });
-				});
-          
+				});        
 </script>
 </body>
 </html>

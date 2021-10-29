@@ -71,7 +71,7 @@ class Read extends ConexaoDB {
 
     /**
      * ****************************************
-     * *********** METODOS PRIVADOS ************
+     * *********** METODOS PRIVADOS ***********
      * ****************************************
      */
     //Obtém o PDO e Prepara a query

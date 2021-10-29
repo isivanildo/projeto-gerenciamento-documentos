@@ -4,7 +4,7 @@ spl_autoload_register(function($nomeClasse){
 });
 
 /**
- * <b>Update.class:</b>
+ * <b>Update</b>
  * Classe responsável por atualizações genéticas no banco de dados!
  * 
  */
@@ -71,7 +71,7 @@ class Update extends ConexaoDB {
 
     /**
      * ****************************************
-     * *********** METODO PRIVADO ************
+     * *********** METODO PRIVADO *************
      * ****************************************
      */
     //Obtém o PDO e Prepara a query
